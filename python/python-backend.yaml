@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-backend-deployment
+  labels:
+    name: python-backend
+    release: prometheus
+  annotations:
+    sidecar.jaegertracing.io/inject: 'true'
+    prometheus.io/scrape: 'true'
+    prometheus.io/path: /metrics
+    prometheus.io/port: pod-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: python-backend
+  template:
+    metadata:
+      name: python-backend-pod
+      labels:
+        app: python-backend
+    spec:
+      containers:
+        - name: python-backend
+          image: samiislam/python-backend:1.0
+          imagePullPolicy: Always
+          ports:
+            - name: pod-backend
+              containerPort: 8080
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-backend-service
+  labels:
+    app: python-backend
+spec:
+  selector:
+    app: python-backend
+  ports:
+    - name: service-backend
+      protocol: TCP
+      port: 8081
+      targetPort: pod-backend
+  type: LoadBalancer
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: python-backend-service-monitor
+  namespace: monitoring
+  labels:
+    app: python-backend
+    release: prometheus
+spec:
+  endpoints:
+    - interval: 15s
+      port: service-backend
+      path: /metrics
+  selector:
+    matchLabels:
+      app: python-backend
+  namespaceSelector:
+    matchNames:
+      - default
