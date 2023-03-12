@@ -522,7 +522,7 @@
         "targets": [
           {
             "$$hashKey": "object:638",
-            "expr": "process_resident_memory_bytes{job=\"example\"}",
+            "expr": "process_resident_memory_bytes{job=\"python-backend-service\"}",
             "format": "time_series",
             "intervalFactor": 1,
             "legendFormat": "mem",
@@ -793,7 +793,7 @@
         "targets": [
           {
             "$$hashKey": "object:638",
-            "expr": "rate(process_cpu_seconds_total{job=\"example\"}[30s])",
+            "expr": "rate(process_cpu_seconds_total{job=\"python-backend-service\"}[30s])",
             "format": "time_series",
             "intervalFactor": 1,
             "legendFormat": "cpu",
